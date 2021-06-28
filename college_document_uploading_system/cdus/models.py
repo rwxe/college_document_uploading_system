@@ -1,9 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-# Create your models here.
-
-
 
 class College(models.Model):
     # 学院
@@ -65,9 +62,18 @@ class UnreviewedDoc(models.Model):
     clazz_teaching_course = models.ForeignKey(
         ClazzTeachingCourse, on_delete=models.CASCADE, verbose_name='所属班级课程')
     status = models.CharField(max_length=20, unique=True, verbose_name='审批状态')
-    # 下面是各种教学文件，基于开发效率的考虑，文件直接使用MySQL存储
-    # TODO
+    # 下面是各种教学文件，采用Django文件字段储存
     # transcripts 成绩单
-    #
-
-
+    transcripts=models.FileField(verbose_name='成绩单')
+    # regular_grade 平时成绩
+    regular_grade=models.FileField(verbose_name='平时成绩')
+    # answer 答案
+    answer=models.FileField(verbose_name='答案')
+    # exam_analysis 试卷分析
+    exam_analysis=models.FileField(verbose_name='试卷分析')
+    # work_summary 工作总结
+    work_summary=models.FileField(verbose_name='工作总结')
+    # num_of_test_paper 试卷本数
+    num_of_test_paper=models.IntegerField(verbose_name='试卷本数')
+    # is_open 是否开卷
+    is_open=models.BooleanField(verbose_name='是否开卷')
