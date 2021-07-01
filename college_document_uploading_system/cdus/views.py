@@ -28,11 +28,49 @@ def hint_and_redirect(request, the_url, hint, show_hint=True, delay_time=1000):
         return render(request, 'cdus/hint.html', context)
 
 def index(request):
-    context={}
-    return render(request, 'cdus/index.html', context)
+        context = {
+                }
+        return render(request, 'cdus/index.html', context)
+
+def console(request,user_type):
+    # 主要的交互界面
+    if request.method == 'GET':
+        commit_list=[]
+        if user_type=='teacher':
+            the_type='教师'
+            user = get_object_or_404(models.Teacher, id=request.session.get('id'))
+            
+
+            # 先遍历这个老师教的所有课
+            for tc in user.teachingcourse_set.all():
+                # 再遍历这个老师教的这个课的班级
+                for ctc in tc.clazzteachingcourse_set.all():
+                    try:
+                        ctc.unrevieweddoc
+                        print(ctc,"有")
+                        commit_list.append({"ctc_name":ctc.__str__(),"ctc_id":ctc.id,"is_commited":"yes"})
+                    except:
+                        print(ctc,"无")
+                        commit_list.append({"ctc_name":ctc.__str__(),"ctc_id":ctc.id,"is_commited":"no"})
+
+        elif user_type=='approver':
+            the_type='审批人'
+            user = get_object_or_404(models.Approver, id=request.session.get('id'))
+        else:
+            return hint_and_redirect(request, reverse('cdus:index'), '未知的用户类型', True)
+        
+        context = {
+                'user_type':the_type,
+                'commit_list':commit_list,
+                }
+        return render(request, 'cdus/console.html', context)
+
+def post_doc(request,ctc_id):
+    pass
 
 def qft(request):
-    return HttpResponse("快速功能测试")
+    context={}
+    return render(request, 'cdus/qft.html', context)
 
 
 def login(request,user_type):
@@ -40,8 +78,17 @@ def login(request,user_type):
     user_type=user_type.lower()
 
     if request.method == 'GET':
-        context = {}
+        if user_type=='teacher':
+            the_type='教师'
+        elif user_type=='approver':
+            the_type='审批人'
+        else:
+            return hint_and_redirect(request, reverse('cdus:index'), '未知的用户类型', True)
+        context = {
+                'user_type':the_type
+                }
         return render(request, 'cdus/login.html', context)
+
     elif request.method == 'POST':
         email = request.POST.get('email')
         p1 = request.POST.get('password1')
@@ -60,7 +107,7 @@ def login(request,user_type):
                 request.session['name'] = result.name
                 request.session['id'] = result.id
                 request.session['user_type'] = user_type
-                return hint_and_redirect(request, reverse('cdus:index'), '登录成功了', False)
+                return hint_and_redirect(request, reverse('cdus:console',args=[user_type]), '登录成功了', False)
 
             else:
                 context = {'err_msg': '密码错误',
@@ -92,7 +139,7 @@ def register(request,user_type):
         elif user_type=='approver':
             the_type='审批人'
         else:
-            the_type='未知用户类型'
+            return hint_and_redirect(request, reverse('cdus:index'), '未知的用户类型', True)
 
         context = {'err_msg': '',
                 'colleges':colleges,

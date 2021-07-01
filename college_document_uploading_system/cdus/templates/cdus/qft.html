@@ -1,20 +1,54 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "cdus/base.html" %}
 {% load static %}
-    <title></title>
-<style>
-blockquote {
-	padding: 0 15px;
-	color: #777;
-	border-left: 4px solid #ddd;
-}
-</style>
-<link rel="stylesheet" href="{% get_static_prefix  %}md_css/{{article.codehilite_style}}.css">
-</head>
-<body>
-    
-            <p>{{ article.body |safe}}</p>
-</body>
-</html>
+
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}快速测试{% endblock title %}
+
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+
+<!-- 定义放置文章标题的div容器 -->
+<div id="accordion">
+    <div class="card">
+        <div class="card-header" id="course_1">
+            <h5 class="mb-0">
+                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="false" aria-controls="collapse_1">
+                    课程1
+                </a>
+            </h5>
+        </div>
+        <div id="collapse_1" class="collapse" data-parent="#accordion" aria-labelledby="course_1">
+            <div class="card-body">
+
+
+                <div id="accordion-2">
+                    <div class="card">
+                        <div class="card-header" id="heading-3">
+                            <h5 class="mb-0">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
+                                    Item 3
+                                </a>
+                            </h5>
+                        </div>
+                        <div id="collapse-3" class="collapse" data-parent="#accordion-2" aria-labelledby="heading-3">
+                            <div class="card-body">
+                                Text 3
+                            </div>
+                        </div>
+                    </div>
+                </div >
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</div>
+</div>
+{% endblock content %}

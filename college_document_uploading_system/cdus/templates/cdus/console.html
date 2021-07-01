@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "cdus/base.html" %}
+{% load static %}
+
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}{{user_type}}控制台{% endblock title %}
+
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+
+<!-- 定义放置文章标题的div容器 -->
+
+
+
+<div class="container-fluid">
+    <h3 class="col-12">您所教授的课程和班级</h3>
+    <div class="row mt-2">
+        <div class="col-12">
+            {% if commit_list  %}
+
+            {% for commit_item in commit_list %}
+            <!-- 文章内容 -->
+            <div class="col-12 mb-4 ">
+                <!-- 卡片容器 -->
+                <div class="card h-100">
+                    <!-- 标题 -->
+                    <h4 class="card-header">{{ commit_item.ctc_name }}</h4>
+                    <!-- 摘要 -->
+                    <div class="card-body">
+                        {%  if commit_item.is_commited == 'yes' %}
+                        <p class="card-text">已提交</p>
+                        {%  else  %}
+                        <p class="card-text">未提交</p>
+                        {%  endif  %}
+                    </div>
+                    <!-- 注脚 -->
+                    <div class="card-footer">
+                        <a href="{% url 'cdus:post_doc' commit_item.ctc_id  %}" class="btn btn-primary">修改或提交</a>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+            {% else  %}
+            <h6 class="col-12 text-secondary">无</h6>
+
+            {% endif  %}
+        </div>
+    </div>
+</div>
+
+</div>
+</div>
+{% endblock content %}
