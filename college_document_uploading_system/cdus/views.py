@@ -35,7 +35,10 @@ def qft(request):
     return HttpResponse("快速功能测试")
 
 
-def login(request):
+def login(request,user_type):
+    # 转换成小写，确保下面比对不会出问题
+    user_type=user_type.lower()
+
     if request.method == 'GET':
         context = {}
         return render(request, 'cdus/login.html', context)
@@ -44,16 +47,19 @@ def login(request):
         p1 = request.POST.get('password1')
 
         try:
-            result = models.Teacher.objects.get(email=email)
+            # 判别用户类型
+            if user_type=='teacher':
+                result = models.Teacher.objects.get(email=email)
+            elif user_type=='approver':
+                result = models.Approver.objects.get(email=email)
+            else:
+                print("BUG,不知道这是什么用户类型")
+                return HttpResponse("我不知道这是什么用户类型")
+
             if hashers.check_password(p1, result.password):
                 request.session['name'] = result.name
                 request.session['id'] = result.id
-                # 登录成功
-               # context = {'the_url': reverse('cdus:index'),
-               #           'hint': '登录成功了',
-               #           'page': '主页',
-               #           }
-               # return render(request, 'cdus/hint.html', context)
+                request.session['user_type'] = user_type
                 return hint_and_redirect(request, reverse('cdus:index'), '登录成功了', False)
 
             else:
@@ -65,6 +71,10 @@ def login(request):
             context = {'err_msg': '此用户不存在',
                        }
             return render(request, 'cdus/login.html', context)
+        except models.Approver.DoesNotExist:
+            context = {'err_msg': '此用户不存在',
+                       }
+            return render(request, 'cdus/login.html', context)
         except:
             ex_type, ex_val, ex_stack = sys.exc_info()
             print(sys.exc_info())
@@ -73,85 +83,63 @@ def login(request):
         return HttpResponse("出BUG了")
 
 
-def register(request):
+def register(request,user_type):
     # 注册页面
     if request.method == 'GET':
-        # 是否发送了验证码
-        request.session['sent'] = 'no'
+        colleges=models.College.objects.all()
+        if user_type=='teacher':
+            the_type='教师'
+        elif user_type=='approver':
+            the_type='审批人'
+        else:
+            the_type='未知用户类型'
+
         context = {'err_msg': '',
-                   'sent': 'no',
+                'colleges':colleges,
+                'user_type':the_type
                    }
         return render(request, 'cdus/register.html', context)
     elif request.method == 'POST':
-        # print("会话项目",request.session.items())
-        # print("会话过期秒数",request.session.get_expiry_age())
-        # print("会话到期时间",request.session.get_expiry_date())
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        p1 = request.POST.get('password1')
-        p2 = request.POST.get('password2')
-        if request.session.get('sent') == 'no':
-            # 这里由于偷懒，并没有记录是否发送成功了
-            try:
-                send_verify_code(request, email)
-            except Exception as e:
-                print(e)
-                print(sys.exc_info())
-                request.session['sent'] = 'no'
-                context = {'err_msg': '验证码的发送出现了问题，这可能在短时间内无法解决，请改日再来',
-                           'sent': 'no',
-                           }
-                return render(request, 'cdus/register.html', context)
 
-            context = {'name': name,
-                       'email': email,
-                       'password1': p1,
-                       'password2': p2,
-                       'sent': 'yes'
-                       }
-            request.session['sent'] = 'yes'
-            return render(request, 'cdus/register.html', context)
-        if request.session.get('sent') == 'yes':
-            if request.session.get('verify_code') != request.POST.get('verify_code'):
-                context = {'err_msg': '验证码输入错误',
-                           'name': name,
-                           'email': email,
-                           'password1': p1,
-                           'password2': p2,
-                           'sent': 'yes',
-                           }
-                return render(request, 'cdus/register.html', context)
-        if request.session.get('sent') == None:
-            context = {'err_msg': '验证码过期，请重新获取',
-                       'sent': 'no',
-                       }
-            return render(request, 'cdus/register.html', context)
 
-        new_user = models.User()
         name = request.POST.get('name')
         # 邮箱也要检测是否唯一
         email = request.POST.get('email')
+        college_id =request.POST.get('college')
         p1 = request.POST.get('password1')
         p2 = request.POST.get('password2')
+
+        if user_type=='teacher':
+            new_user = models.Teacher()
+            new_user.college=models.College.objects.get(pk=college_id)
+            TYPE_USER=models.Teacher
+        elif user_type=='approver':
+            new_user = models.Approver()
+            new_user.college=models.College.objects.get(pk=college_id)
+            TYPE_USER=models.Approver
+        else:
+            print("BUG,不知道这是什么用户类型")
+            return HttpResponse("我不知道这是什么用户类型")
 
         try:
             # 检测数据库中是否已存在同名用户，若抛出该用户
             # 名不存在异常，则为可以存入数据库
-            models.User.objects.get(name=name)
+
+            TYPE_USER.objects.get(name=name)
             context = {'err_msg': '此用户名已存在，请更换一个',
                        }
             return render(request, 'cdus/register.html', context)
-        except models.User.DoesNotExist:
+        except TYPE_USER.DoesNotExist:
             new_user.name = name
 
         try:
             # 检测数据库中是否已存在相同邮箱，若抛出该邮箱
             # 不存在异常，则为可以存入数据库
-            models.User.objects.get(email=email)
+            TYPE_USER.objects.get(email=email)
             context = {'err_msg': '此邮箱已存在，请更换一个',
                        }
             return render(request, 'cdus/register.html', context)
-        except models.User.DoesNotExist:
+        except TYPE_USER.DoesNotExist:
             new_user.email = email
 
         if p1 != p2:
@@ -163,12 +151,6 @@ def register(request):
             new_user.password = p1_encrypted
             try:
                 new_user.save()
-                # 注册成功
-               # context = {'the_url': reverse('cdus:index'),
-               #           'hint': '注册成功了',
-               #           'page': '主页',
-               #           }
-               # return render(request, 'cdus/hint.html', context)
                 return hint_and_redirect(request, reverse('cdus:index'), '注册成功了')
 
             except DataError:
@@ -176,4 +158,6 @@ def register(request):
                            }
                 return render(request, 'cdus/register.html', context)
             except:
+                ex_type, ex_val, ex_stack = sys.exc_info()
+                print(sys.exc_info())
                 return HttpResponse("出BUG了")

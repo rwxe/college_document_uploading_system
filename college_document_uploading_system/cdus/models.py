@@ -34,6 +34,17 @@ class Teacher(models.Model):
     def __str__(self):
         return self.name
 
+class Approver(models.Model):
+    # 审批人
+    # id 自动创建
+    college = models.ForeignKey(
+        College, on_delete=models.CASCADE, verbose_name='所属学院')
+    name = models.CharField(max_length=20,  verbose_name='审批人名')
+    email = models.CharField(max_length=100,unique=True, verbose_name='邮箱')
+    password = models.CharField(max_length=100, verbose_name='密码字段')
+
+    def __str__(self):
+        return self.name
 
 class Course(models.Model):
     # 课程
