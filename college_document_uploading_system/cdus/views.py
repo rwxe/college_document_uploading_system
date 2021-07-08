@@ -257,11 +257,12 @@ def login(request, user_type):
 
 def register(request, user_type):
     # 注册页面
+    print(user_type)
     if request.method == 'GET':
         colleges = models.College.objects.all()
-        if user_type == 'teacher':
+        if user_type == 'teacher' or user_type=='教师':
             the_type = '教师'
-        elif user_type == 'approver':
+        elif user_type == 'approver' or user_type=='审批人':
             the_type = '审批人'
         else:
             return hint_and_redirect(request, reverse('cdus:index'), '未知的用户类型', True)
