@@ -10,45 +10,21 @@
 {% block content %}
 
 <!-- 定义放置文章标题的div容器 -->
-<div id="accordion">
-    <div class="card">
-        <div class="card-header" id="course_1">
-            <h5 class="mb-0">
-                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="false" aria-controls="collapse_1">
-                    课程1
-                </a>
-            </h5>
-        </div>
-        <div id="collapse_1" class="collapse" data-parent="#accordion" aria-labelledby="course_1">
-            <div class="card-body">
-
-
-                <div id="accordion-2">
-                    <div class="card">
-                        <div class="card-header" id="heading-3">
-                            <h5 class="mb-0">
-                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3">
-                                    Item 3
-                                </a>
-                            </h5>
-                        </div>
-                        <div id="collapse-3" class="collapse" data-parent="#accordion-2" aria-labelledby="heading-3">
-                            <div class="card-body">
-                                Text 3
-                            </div>
-                        </div>
-                    </div>
-                </div >
 
 
 
-            </div>
-        </div>
-    </div>
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    下载文档
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      {%  for f in files  %}
+      <a class="dropdown-item" href="{{ f.url }}">{{ f.name }}</a>
+      {% endfor %}
+      <a class="dropdown-item" href="">{{ is_open }}</a>
+      <a class="dropdown-item" href="">试卷本数:{{ num_of_test_paper }}</a>
+  </div>
 </div>
 
 
-
-</div>
-</div>
 {% endblock content %}

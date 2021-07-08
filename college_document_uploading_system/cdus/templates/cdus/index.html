@@ -14,38 +14,8 @@
 
 
 <div class="container-fluid">
-    <h3 class="col-12">您的课程</h3>
-    <div class="row mt-2">
-        <div class="col-12">
-            {% if articles  %}
 
-            {% for article in articles %}
-            <!-- 文章内容 -->
-            <div class="col-12 mb-4 ">
-                <!-- 卡片容器 -->
-                <div class="card h-100">
-                    <!-- 标题 -->
-                    <h4 class="card-header">{{ article.title }}</h4>
-                    <!-- 摘要 -->
-                    <div class="card-body">
-                        <p class="card-text">{{article.author.username}}: {{ article.body }}</p>
-                    </div>
-                    <!-- 注脚 -->
-                    <div class="card-footer">
-                        <a href="{% url 'cdus:article_detail' article.id %}" class="btn btn-primary">阅读本文</a>
-                    </div>
-                </div>
-            </div>
+    <h3 class="col-12">请登录或注册</h3>
 
-            {% endfor %}
-            {% else  %}
-            <h6 class="col-12 text-secondary">无</h6>
-
-            {% endif  %}
-        </div>
-    </div>
-</div>
-
-</div>
 </div>
 {% endblock content %}

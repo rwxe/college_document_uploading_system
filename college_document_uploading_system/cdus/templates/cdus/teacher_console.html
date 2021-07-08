@@ -4,7 +4,7 @@
 {% load static %}
 
 <!-- 写入 base.html 中定义的 title -->
-{% block title %}{{user_type}}控制台{% endblock title %}
+{% block title %}教师控制台{% endblock title %}
 
 <!-- 写入 base.html 中定义的 content -->
 {% block content %}
@@ -23,16 +23,12 @@
             <!-- 文章内容 -->
             <div class="col-12 mb-4 ">
                 <!-- 卡片容器 -->
-                <div class="card h-100">
+                <div class="card h-100 ">
                     <!-- 标题 -->
                     <h4 class="card-header">{{ commit_item.ctc_name }}</h4>
                     <!-- 摘要 -->
                     <div class="card-body">
-                        {%  if commit_item.is_commited == 'yes' %}
-                        <p class="card-text">已提交</p>
-                        {%  else  %}
-                        <p class="card-text">未提交</p>
-                        {%  endif  %}
+                        <p class="card-text">{{commit_item.status}}</p>
                     </div>
                     <!-- 注脚 -->
                     <div class="card-footer">

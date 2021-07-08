@@ -10,13 +10,16 @@
         <li class="nav-item "> <a class="nav-link" href="{% url 'cdus:qft'  %}">快速测试功能</a> </li>
     </ul>
     <ul class="navbar-nav ml-auto">
-        <li class="nav-item active"> <a class="nav-link" href="{%  url 'cdus:index'  %}" >消息</a> </li>
-        {%  if request.session.username  %}
+        {%  if request.session.user_type == "teacher"  %}
+        <li class="nav-item active"> <a class="nav-link" href="{%  url 'cdus:console' "teacher"  %}" >控制台</a> </li>
+        {%  elif request.session.user_type == "approver" %}
+        <li class="nav-item active"> <a class="nav-link" href="{%  url 'cdus:console' "approver"  %}" >控制台</a> </li>
+        {%  endif  %}
+        {%  if request.session.name  %}
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.session.username}}</a>
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.session.name}}</a>
         <div class="dropdown-menu" aria-labelledby="dropdown01">
-            <a class="dropdown-item" href="{% url 'cdus:index'   %}">个人中心</a>
-          <a class="dropdown-item" href="{%  url 'cdus:index'  %}">登出</a>
+          <a class="dropdown-item" href="{%  url 'cdus:logout'  %}">登出</a>
         </div>
       </li>
         {%  else  %}

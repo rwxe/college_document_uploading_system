@@ -46,10 +46,18 @@ class Approver(models.Model):
     def __str__(self):
         return self.name
 
+class ApprovalLog(models.Model):
+    # 审批日志
+    # id 自动创建
+    approver = models.ForeignKey(
+        Approver, on_delete=models.CASCADE, verbose_name='审批人')
+    doc_description=models.CharField(max_length=50,verbose_name='文档描述')
+    result=models.CharField(max_length=50,verbose_name='审批结果')
+
+
 class Course(models.Model):
     # 课程
     # id 自动创建
-    # 课程并不关联到一个学院上，具体这样做是不是对的，我也不知道
     name = models.CharField(max_length=20,  verbose_name='课程名')
     # 为了简便开发，课程没有学分字段
 
@@ -92,7 +100,7 @@ class ClazzTeachingCourse(models.Model):
         TeachingCourse, on_delete=models.CASCADE, verbose_name='课程')
 
     def __str__(self):
-        return self.clazz.name+' '+self.teaching_course.__str__()
+        return self.teaching_course.__str__()+' '+self.clazz.name
 
 
 class UnreviewedDoc(models.Model):
@@ -134,7 +142,6 @@ class ReviewedDoc(models.Model):
 
     clazz_teaching_course = models.OneToOneField(
         ClazzTeachingCourse, on_delete=models.CASCADE, verbose_name='所属班级课程')
-    
     # 下面是各种教学文件，采用Django文件字段储存
     # transcripts 成绩单
     transcripts = models.FileField(verbose_name='成绩单')
