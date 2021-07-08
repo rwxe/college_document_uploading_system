@@ -31,6 +31,11 @@ def hint_and_redirect(request, the_url, hint, show_hint=True, delay_time=1000):
 
 
 def index(request):
+    if request.session.get('user_type')=='teacher':
+        return console(request,"teacher")
+    elif request.session.get('user_type')=='approver':
+        return console(request,"approver")
+
     context = {
     }
     return render(request, 'cdus/index.html', context)
