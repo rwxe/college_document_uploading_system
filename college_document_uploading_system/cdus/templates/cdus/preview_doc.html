@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<!-- extends表明此页面继承自 base.html 文件 -->
 {% extends "cdus/base.html" %}
 {% load static %}
-<!-- 写入 base.html 中定义的 title -->
 {% block title %} 查看文件 {% endblock title %}
-<!-- 写入 base.html 中定义的 content -->
 {% block content %}
-<!-- 写文章表单 -->
 <div class="container">
     <div class="row">
         <div class="col-12">
             <br>
-            <!-- 提交文章的表单 -->
             <form method="POST" action="#" enctype="multipart/form-data">
-                <!-- Django中需要POST数据的地方都必须有csrf_token -->
                 {% csrf_token %}
                 <div class="form-group">
                     <label >成绩单</label>
@@ -43,7 +37,6 @@
                         <input type="checkbox" class="form-check-input" name="is_open">
                         <label class="form-check-label" >是否开卷</label>
                     </div>
-                <!-- 提交按钮 -->
                 <button type="submit" class="btn btn-primary">完成</button>
             </form>
         </div>

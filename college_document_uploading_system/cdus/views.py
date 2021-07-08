@@ -73,7 +73,6 @@ def console(request, user_type):
                 'commit_list': commit_list,
             }
             return render(request, 'cdus/approver_console.html', context)
-
         else:
             return hint_and_redirect(request, reverse('cdus:index'), '未知的用户类型', True)
 
@@ -160,7 +159,7 @@ def review(request, ud_id, op):
             # 同时修改unreviewed_doc的状态
             ud.save()
     elif op == 'fail':
-        ud.status = '不通过'
+        ud.status = '未通过'
         ud.save()
 
     return hint_and_redirect(request, reverse('cdus:console', args=["approver"]), '审批成功了', True)

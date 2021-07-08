@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<!-- extends表明此页面继承自 base.html 文件 -->
 {% extends "cdus/base.html" %}
 {% load static %}
 
-<!-- 写入 base.html 中定义的 title -->
 {% block title %}审批人控制台{% endblock title %}
 
-<!-- 写入 base.html 中定义的 content -->
 {% block content %}
-
-<!-- 定义放置文章标题的div容器 -->
-
 
 
 <div class="container-fluid">
@@ -20,27 +14,33 @@
             {% if commit_list  %}
 
             {% for commit_item in commit_list %}
-            <!-- 文章内容 -->
             <div class="col-12 mb-4 ">
-                <!-- 卡片容器 -->
                 <div class="card h-100 ">
-                    <!-- 标题 -->
+
+                {% if commit_item.status == ""  %}
                     <h4 class="card-header">{{ commit_item.ud_name }}</h4>
-                    <!-- 摘要 -->
+                {% elif commit_item.status == "未通过"  %}
+                    <h4 class="card-header text-white bg-danger">{{ commit_item.ud_name }}</h4>
+                {% elif commit_item.status == "未审核"  %}
+                    <h4 class="card-header text-white bg-primary">{{ commit_item.ud_name }}</h4>
+                {% elif commit_item.status == "已通过"  %}
+                    <h4 class="card-header text-white bg-success">{{ commit_item.ud_name }}</h4>
+                {% else  %}
+                    <h4 class="card-header">{{ commit_item.ud_name }}</h4>
+                {% endif %}
                     <div class="card-body">
                         <p class="card-text">{{commit_item.status}}</p>
                     </div>
-                    <!-- 注脚 -->
                     <div class="card-footer">
 
-  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    下载文档
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      {%  for f in commit_item.files  %}
-      <a class="dropdown-item" href="{{ f.url }}">{{ f.name }}</a>
-      {% endfor %}
-  </div>
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            下载文档
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {%  for f in commit_item.files  %}
+                            <a class="dropdown-item" href="{{ f.url }}">{{ f.name }}</a>
+                            {% endfor %}
+                        </div>
                         <a href="{% url 'cdus:review' commit_item.ud_id  "pass" %}" class="btn btn-success">通过</a>
                         <a href="{% url 'cdus:review' commit_item.ud_id  "fail" %}" class="btn btn-danger">不通过</a>
 
