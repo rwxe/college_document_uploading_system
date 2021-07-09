@@ -225,7 +225,8 @@ def login(request, user_type):
             return hint_and_redirect(request, reverse('cdus:index'), '未知的用户类型', True)
 
         context = {
-            'user_type': the_type
+            'the_type':the_type,
+            'user_type': user_type
         }
         return render(request, 'cdus/login.html', context)
 
@@ -284,7 +285,8 @@ def register(request, user_type):
 
         context = {'err_msg': '',
                    'colleges': colleges,
-                   'user_type': the_type
+                   'the_type':the_type,
+                   'user_type': user_type
                    }
         return render(request, 'cdus/register.html', context)
     elif request.method == 'POST':
