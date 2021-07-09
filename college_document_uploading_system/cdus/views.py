@@ -31,10 +31,10 @@ def hint_and_redirect(request, the_url, hint, show_hint=True, delay_time=1000):
 
 
 def index(request):
-    if request.session.get('user_type')=='teacher':
-        return console(request,"teacher")
-    elif request.session.get('user_type')=='approver':
-        return console(request,"approver")
+    if request.session.get('user_type') == 'teacher':
+        return console(request, "teacher")
+    elif request.session.get('user_type') == 'approver':
+        return console(request, "approver")
 
     context = {
     }
@@ -72,7 +72,7 @@ def console(request, user_type):
                 models.Approver, id=request.session.get('id'))
             for ud in models.UnreviewedDoc.objects.all().order_by('-id'):
                 commit_list.append(
-                       {"ud_name": ud.__str__(), "ud_id": ud.id, "status": ud.status,"files":get_file_context(ud.id)})
+                    {"ud_name": ud.__str__(), "ud_id": ud.id, "status": ud.status, "files": get_file_context(ud.id)})
 
             context = {
                 'commit_list': commit_list,
@@ -123,11 +123,11 @@ def get_file_context(ud_id):
     if len(ud.transcripts.name) != 0:
         files.append({"name": "成绩单", "url": ud.transcripts.url})
     if len(ud.regular_grade.name) != 0:
-      files.append({"name": "平时成绩", "url": ud.regular_grade.url})
+        files.append({"name": "平时成绩", "url": ud.regular_grade.url})
     if len(ud.answer.name) != 0:
-      files.append({"name": "答案", "url": ud.answer.url})
+        files.append({"name": "答案", "url": ud.answer.url})
     if len(ud.exam_analysis.name) != 0:
-      files.append({"name": "试卷分析", "url": ud.exam_analysis.url})
+        files.append({"name": "试卷分析", "url": ud.exam_analysis.url})
     if len(ud.work_summary.name) != 0:
         files.append({"name": "工作总结", "url": ud.work_summary.url})
 
@@ -142,7 +142,18 @@ def get_file_context(ud_id):
     return files
 
 
+def approval_logger(request, ud_id, op):
+    print(repr(request.session.get('id')))
+    log = models.ApprovalLog()
+
+    log.approver = models.Approver.objects.get(pk=request.session.get('id'))
+    log.doc_description = models.UnreviewedDoc.objects.get(pk=ud_id).doc_description()
+    log.result=op
+    log.save()
+
+
 def review(request, ud_id, op):
+    approval_logger(request,ud_id,op)
     ud = models.UnreviewedDoc.objects.get(pk=ud_id)
     ctc = ud.clazz_teaching_course
     if op == 'pass':
@@ -177,11 +188,11 @@ def qft(request):
     if len(ud.transcripts.name) != 0:
         files.append({"name": "成绩单", "url": ud.transcripts.url})
     if len(ud.regular_grade.name) != 0:
-      files.append({"name": "平时成绩", "url": ud.regular_grade.url})
+        files.append({"name": "平时成绩", "url": ud.regular_grade.url})
     if len(ud.answer.name) != 0:
-      files.append({"name": "答案", "url": ud.answer.url})
+        files.append({"name": "答案", "url": ud.answer.url})
     if len(ud.exam_analysis.name) != 0:
-      files.append({"name": "试卷分析", "url": ud.exam_analysis.url})
+        files.append({"name": "试卷分析", "url": ud.exam_analysis.url})
     if len(ud.work_summary.name) != 0:
         files.append({"name": "工作总结", "url": ud.work_summary.url})
 
@@ -199,7 +210,6 @@ def qft(request):
     # return HttpResponse('<a href="'+rd.transcripts.url+'">s</a>')
     # return FileResponse(rd.transcripts,as_attachment=True)
     # return StreamingHttpResponse(rd.transcripts.chunks())
-
 
 
 def login(request, user_type):
@@ -265,9 +275,9 @@ def register(request, user_type):
     print(user_type)
     if request.method == 'GET':
         colleges = models.College.objects.all()
-        if user_type == 'teacher' or user_type=='教师':
+        if user_type == 'teacher' or user_type == '教师':
             the_type = '教师'
-        elif user_type == 'approver' or user_type=='审批人':
+        elif user_type == 'approver' or user_type == '审批人':
             the_type = '审批人'
         else:
             return hint_and_redirect(request, reverse('cdus:index'), '未知的用户类型', True)

@@ -53,6 +53,9 @@ class ApprovalLog(models.Model):
         Approver, on_delete=models.CASCADE, verbose_name='审批人')
     doc_description=models.CharField(max_length=50,verbose_name='文档描述')
     result=models.CharField(max_length=50,verbose_name='审批结果')
+    
+    def __str__(self):
+        return self.approver.name+' '+self.doc_description+' '+self.result
 
 
 class Course(models.Model):
@@ -131,6 +134,9 @@ class UnreviewedDoc(models.Model):
     num_of_test_paper = models.IntegerField(verbose_name='试卷本数')
     # is_open 是否开卷
     is_open = models.BooleanField(verbose_name='是否开卷')
+    
+    def doc_description(self):
+        return self.clazz_teaching_course.__str__()
 
     def __str__(self):
         return self.clazz_teaching_course.__str__()+' '+self.status
